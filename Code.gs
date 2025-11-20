@@ -1,7 +1,26 @@
 /**
  * ----------------------------------------------------------------------------
- * SCRIPT PRINCIPAL - DISPARO DE E-MAIL COM ROTEAMENTO
+ * 🏭 CONTROLE DE PRAZOS DE INDUSTRIALIZAÇÃO - SCRIPT PRINCIPAL
  * ----------------------------------------------------------------------------
+ * * 📄 DESCRIÇÃO DO SISTEMA:
+ * Este script é o motor de automação para gestão fiscal de remessas. 
+ * Ele monitora a aba de "Pendencias", identifica Notas Fiscais que ainda não 
+ * retornaram e calcula o prazo restante para evitar passivos fiscais.
+ * * 👥 CRIADORES:
+ * - Lógica de Negócio e Estrutura: [Seu Nome]
+ * - Desenvolvimento e Refatoração: Gemini AI
+ * * 🔖 VERSÃO:
+ * 1.1.0 - Build Atual (Inclui Roteamento de E-mail por Destinatário)
+ * * ⚙️ O QUE ESTE SCRIPT FAZ:
+ * 1. Leitura: Acessa a aba 'Pendencias' e lê os dados a partir da linha configurada.
+ * 2. Deduplicação: Se uma NF tem 10 itens, o script agrupa em apenas 1 aviso para não lotar o e-mail.
+ * 3. Roteamento: Separa NFs de clientes específicos (VIPs) para gestores dedicados.
+ * 4. Formatação: Gera um e-mail HTML com cores de semáforo (Preto/Vermelho/Amarelo/Verde).
+ * * 🚀 GUIA RÁPIDO DE USO:
+ * - Para configurar E-mails ou Nomes de Abas: Edite APENAS o arquivo 'Config.gs'.
+ * - Para testar: Selecione a função 'enviarRelatorioIndustrializacao' acima e clique em 'Executar'.
+ * - Para automatizar: Crie um Acionador (Trigger) no menu "Acionadores" (ícone de relógio) à esquerda.
+ * * ----------------------------------------------------------------------------
  */
 
 function enviarRelatorioIndustrializacao() {
@@ -121,7 +140,7 @@ function enviarEmailFormatado(dadosRelatorio, emailDestino, tituloEmail) {
 
     var html = "<div style='font-family: Arial, sans-serif; color: #333;'>";
     html += "<h2 style='color: #202124;'>" + tituloEmail + "</h2>";
-    html += "<p>Prezados, seguem as NFs de remessa de determinados tipos de aço que ainda estão pendentes de retorno:</p>";
+    html += "<p>Seguem as NFs pendentes de retorno:</p>";
     
     html += "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; border: 1px solid #ddd;'>";
     html += "<tr style='background-color: #f1f3f4;'><th>NF Remessa</th><th>Destinatário</th><th>Dias Restantes</th><th>Status</th></tr>";
