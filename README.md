@@ -1,5 +1,77 @@
-🏭 Controle de Prazos de Industrialização (Google Sheets & Apps Script)Este projeto é uma solução automatizada para gestão fiscal de Remessas para Industrialização. O sistema monitora os prazos legais de retorno de mercadorias (geralmente 180 dias) para evitar passivos fiscais e multas, enviando alertas automáticos por e-mail para os responsáveis.🚀 FuncionalidadesPainel Visual Automático: Uso de QUERY no Google Sheets para filtrar apenas notas pendentes.Dashboard de Status: Contadores visuais (Semáforo) indicando urgência (Vencidos, Críticos, Atenção, No Prazo).Automação de E-mails: Script que roda periodicamente (Trigger) para cobrar pendências.Roteamento Inteligente: Envia e-mails para destinatários diferentes dependendo do cliente (Ex: Clientes VIP/Específicos vão para um gestor, o restante para o padrão).Deduplicação: Agrupa múltiplos itens da mesma Nota Fiscal em um único aviso.🛠️ Tecnologias UtilizadasGoogle Sheets: Banco de dados e Interface de Usuário.Google Apps Script: Backend e automação de e-mails.Fórmulas Avançadas: QUERY, ARRAYFORMULA, CONT.SES.⚙️ Estrutura da PlanilhaPara que o script funcione, a planilha deve seguir esta estrutura:1. Aba de Origem (dados_Aço ou similar)Deve conter o histórico completo de emissões. As colunas críticas para o sistema são:Fornecedor/ClienteNF RemessaData FaturamentoNF Retorno (Se estiver vazia, o sistema considera pendente).Destinatário (Usado para o roteamento de e-mail).2. Aba de Painel (Pendencias)Esta aba é alimentada automaticamente.Fórmula Principal (Célula A4):=QUERY('dados_Aço'!A3:U; "SELECT A, D, L, M, Q, R, S, T WHERE U IS NULL AND A IS NOT NULL ORDER BY T ASC"; 0)
-(Ajustar letras das colunas conforme sua planilha original).Colunas de Cálculo (I e J):Data Limite: =ARRAYFORMULA(IF(H4:H=""; ""; H4:H + 170))Dias Restantes: =ARRAYFORMULA(IF(I4:I=""; ""; I4:I - HOJE()))💻 Instalação e Configuração do ScriptAbra sua planilha Google.Vá em Extensões > Apps Script.Crie dois arquivos: Code.gs e Config.gs.Copie os códigos deste repositório para os respectivos arquivos.Configurando o Config.gsTodas as variáveis editáveis estão centralizadas neste arquivo. Edite as seguintes linhas para adaptar à sua realidade:var CONFIG = {
+🏭 Controle de Prazos de Industrialização (Google Sheets & Apps Script)
+
+Este projeto é uma solução automatizada para gestão fiscal de Remessas para Industrialização. O sistema monitora os prazos legais de retorno de mercadorias (geralmente 180 dias) para evitar passivos fiscais e multas, enviando alertas automáticos por e-mail para os responsáveis.
+
+🚀 Funcionalidades
+
+Painel Visual Automático: Uso de QUERY no Google Sheets para filtrar apenas notas pendentes.
+
+Dashboard de Status: Contadores visuais (Semáforo) indicando urgência (Vencidos, Críticos, Atenção, No Prazo).
+
+Automação de E-mails: Script que roda periodicamente (Trigger) para cobrar pendências.
+
+Roteamento Inteligente: Envia e-mails para destinatários diferentes dependendo do cliente (Ex: Clientes VIP/Específicos vão para um gestor, o restante para o padrão).
+
+Deduplicação: Agrupa múltiplos itens da mesma Nota Fiscal em um único aviso.
+
+🛠️ Tecnologias Utilizadas
+
+Google Sheets: Banco de dados e Interface de Usuário.
+
+Google Apps Script: Backend e automação de e-mails.
+
+Fórmulas Avançadas: QUERY, ARRAYFORMULA, CONT.SES.
+
+⚙️ Estrutura da Planilha
+
+Para que o script funcione, a planilha deve seguir esta estrutura:
+
+1. Aba de Origem (dados_Aço ou similar)
+
+Deve conter o histórico completo de emissões. As colunas críticas para o sistema são:
+
+Fornecedor/Cliente
+
+NF Remessa
+
+Data Faturamento
+
+NF Retorno (Se estiver vazia, o sistema considera pendente).
+
+Destinatário (Usado para o roteamento de e-mail).
+
+2. Aba de Painel (Pendencias)
+
+Esta aba é alimentada automaticamente.
+
+Fórmula Principal (Célula A4):
+
+=QUERY('dados_Aço'!A3:U; "SELECT A, D, L, M, Q, R, S, T WHERE U IS NULL AND A IS NOT NULL ORDER BY T ASC"; 0)
+
+
+(Ajustar letras das colunas conforme sua planilha original).
+
+Colunas de Cálculo (I e J):
+
+Data Limite: =ARRAYFORMULA(IF(H4:H=""; ""; H4:H + 170))
+
+Dias Restantes: =ARRAYFORMULA(IF(I4:I=""; ""; I4:I - HOJE()))
+
+💻 Instalação e Configuração do Script
+
+Abra sua planilha Google.
+
+Vá em Extensões > Apps Script.
+
+Crie dois arquivos: Code.gs e Config.gs.
+
+Copie os códigos deste repositório para os respectivos arquivos.
+
+Configurando o Config.gs
+
+Todas as variáveis editáveis estão centralizadas neste arquivo. Edite as seguintes linhas para adaptar à sua realidade:
+
+var CONFIG = {
   // Defina quem recebe os alertas específicos
   EMAIL_ESPECIFICO: "gestor.conta@empresa.com",
   NOME_ALVO_ESPECIFICO: "NOME DO CLIENTE ESPECIAL LTDA",
@@ -12,4 +84,70 @@
   INDEX_COLUNA_NF: 6,
   INDEX_COLUNA_DIAS: 9
 };
-Criando o Acionador (Trigger)Para que o e-mail seja enviado automaticamente:No editor de script, clique no ícone de Relógio (Acionadores).Clique em + Adicionar Acionador.Configure:Função: enviarRelatorioIndustrializacaoOrigem: Baseado no tempoTipo: Contador de meses (ou conforme necessidade).🎨 Categorias de UrgênciaO sistema classifica as pendências automaticamente nas seguintes cores:StatusDias RestantesAção Recomendada⚫ VENCIDO< 0Ação Imediata (Risco Fiscal)🔴 SUPER URGENTE0 a 19Cobrar retorno urgente🟠 ATENÇÃO20 a 39Enviar e-mail de cobrança🟡 MORNO40 a 69Monitorar🟢 NO PRAZO> 70Aguardar🤝 Autores[Seu Nome] - Lógica de Negócio e Arquitetura.Gemini AI - Desenvolvimento e Refatoração de Código.📄 LicençaEste projeto é de uso interno e proprietário.
+
+
+Criando o Acionador (Trigger)
+
+Para que o e-mail seja enviado automaticamente:
+
+No editor de script, clique no ícone de Relógio (Acionadores).
+
+Clique em + Adicionar Acionador.
+
+Configure:
+
+Função: enviarRelatorioIndustrializacao
+
+Origem: Baseado no tempo
+
+Tipo: Contador de meses (ou conforme necessidade).
+
+🎨 Categorias de Urgência
+
+O sistema classifica as pendências automaticamente nas seguintes cores:
+
+Status
+
+Dias Restantes
+
+Ação Recomendada
+
+⚫ VENCIDO
+
+< 0
+
+Ação Imediata (Risco Fiscal)
+
+🔴 SUPER URGENTE
+
+0 a 19
+
+Cobrar retorno urgente
+
+🟠 ATENÇÃO
+
+20 a 39
+
+Enviar e-mail de cobrança
+
+🟡 MORNO
+
+40 a 69
+
+Monitorar
+
+🟢 NO PRAZO
+
+> 70
+
+Aguardar
+
+🤝 Autores
+
+[Seu Nome] - Lógica de Negócio e Arquitetura.
+
+Gemini AI - Desenvolvimento e Refatoração de Código.
+
+📄 Licença
+
+Este projeto é de uso interno e proprietário.
